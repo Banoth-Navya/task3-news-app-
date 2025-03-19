@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'news_provider.dart';
 import 'news_page.dart';
-
 void main() {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => NewsProvider()),
+        ChangeNotifierProvider(create: (_) => NewsProvider()),
       ],
       child: const MyApp(),
     ),
@@ -19,8 +18,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'News App',
-      theme: ThemeData(primarySwatch: Colors.green),
+      title: 'Flutter News App',
+      theme: ThemeData(),
       home: const NewsPage(),
     );
   }

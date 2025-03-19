@@ -1,28 +1,21 @@
 import 'package:flutter/material.dart';
+import 'news_api_service.dart';
 import 'package:news_api_flutter_package/model/article.dart';
-import 'package:news_api_flutter_package/news_api_flutter_package.dart';
-
-class NewsProvider extends ChangeNotifier {
-  final String apiKey = "5129fc16637b46fcbfadc5c0e01ab425";
+class NewsProvider with ChangeNotifier {
+  final NewsApiService _newsApiService = NewsApiService();
   List<Article> _articles = [];
   bool _isLoading = false;
   List<Article> get articles => _articles;
   bool get isLoading => _isLoading;
-  Future<void> fetchNews() async {
+  Future<void> fetchNews(String sourceId) async {
+    _isLoading = true;
+    notifyListeners();
     try {
-      _isLoading = true;
-      notifyListeners();
-      NewsAPI newsAPI = NewsAPI(apiKey: apiKey);
-      _articles = await newsAPI.getTopHeadlines(
-        sources: ["fox-sports"].join(","),
-        pageSize: 50,
-      );
-      _isLoading = false;
-      notifyListeners();
+      _articles = await _newsApiService.fetchNews(sourceId: sourceId);
     } catch (e) {
-      _isLoading = false;
-      notifyListeners();
-      debugPrint("Error fetching news: $e");
+      _articles = [];
     }
+    _isLoading = false;
+    notifyListeners();
   }
 }

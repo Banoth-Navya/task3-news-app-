@@ -1,25 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-
 class NewsWebView extends StatefulWidget {
   final String url;
   const NewsWebView({super.key, required this.url});
-
   @override
   State<NewsWebView> createState() => _NewsWebViewState();
 }
-
 class _NewsWebViewState extends State<NewsWebView> {
   late final WebViewController _controller;
-
+  bool isLoading = true;
   @override
   void initState() {
     super.initState();
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageFinished: (_) {
+            setState(() {
+              isLoading = false;
+            });
+          },
+        ),
+      )
       ..loadRequest(Uri.parse(widget.url));
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,7 +32,15 @@ class _NewsWebViewState extends State<NewsWebView> {
         backgroundColor: Colors.green,
         title: const Text("NEWS NOW"),
       ),
-      body: WebViewWidget(controller: _controller),
+      body: Stack(
+        children: [
+          WebViewWidget(controller: _controller),
+          if (isLoading)
+            const Center(
+              child: CircularProgressIndicator(),
+            ),
+        ],
+      ),
     );
   }
 }
