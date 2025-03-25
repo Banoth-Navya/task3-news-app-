@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:news_api_flutter_package/model/article.dart';
 class NewsApiService {
-  final String apiKey = "5129fc16637b46fcbfadc5c0e01ab425";
+  final String apiKey = "bb45c5eb58db4f08bc794670a422d1b1";
   final String baseUrl = "https://newsapi.org/v2/top-headlines";
   Future<List<Article>> fetchNews({String? category, String? query, int page = 1}) async {
     String url = "$baseUrl?category=$category&page=$page&pageSize=10&apiKey=$apiKey";
