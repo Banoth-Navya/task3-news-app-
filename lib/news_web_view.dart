@@ -7,13 +7,14 @@ class NewsWebView extends StatefulWidget {
   State<NewsWebView> createState() => _NewsWebViewState();
 }
 class _NewsWebViewState extends State<NewsWebView> {
-  late final WebViewController _controller;
+  late WebViewController _controller;
   bool isLoading = true;
   @override
   void initState() {
     super.initState();
-    _controller = WebViewController()
-      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+    final WebViewController controller = WebViewController.fromPlatformCreationParams(
+      const PlatformWebViewControllerCreationParams(),
+    )..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageFinished: (_) {
@@ -24,6 +25,7 @@ class _NewsWebViewState extends State<NewsWebView> {
         ),
       )
       ..loadRequest(Uri.parse(widget.url));
+    _controller = controller;
   }
   @override
   Widget build(BuildContext context) {

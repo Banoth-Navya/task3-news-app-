@@ -4,10 +4,12 @@ import 'package:news_api_flutter_package/model/article.dart';
 class NewsApiService {
   final String apiKey = "5129fc16637b46fcbfadc5c0e01ab425";
   final String baseUrl = "https://newsapi.org/v2/top-headlines";
-  Future<List<Article>> fetchNews({String? sourceId}) async {
-    final response = await http.get(
-      Uri.parse("$baseUrl?sources=$sourceId&apiKey=$apiKey"),
-    );
+  Future<List<Article>> fetchNews({String? category, String? query, int page = 1}) async {
+    String url = "$baseUrl?category=$category&page=$page&pageSize=10&apiKey=$apiKey";
+    if (query != null && query.isNotEmpty) {
+      url += "&q=$query";
+    }
+    final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       final List articles = data["articles"];
