@@ -12,9 +12,11 @@ class _NewsWebViewState extends State<NewsWebView> {
   @override
   void initState() {
     super.initState();
-    final WebViewController controller = WebViewController.fromPlatformCreationParams(
+    final WebViewController controller = WebViewController
+        .fromPlatformCreationParams(
       const PlatformWebViewControllerCreationParams(),
-    )..setJavaScriptMode(JavaScriptMode.unrestricted)
+    )
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageFinished: (_) {

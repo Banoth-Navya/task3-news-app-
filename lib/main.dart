@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'news_page.dart';
 import 'login_page.dart';
 import 'news_provider.dart';
+import 'theme_provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final FlutterSecureStorage storage = const FlutterSecureStorage();
@@ -18,12 +19,19 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => NewsProvider()),
+        ChangeNotifierProvider(create: (context) => ThemeProvider()), // Added ThemeProvider
       ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Flutter News App',
-        theme: ThemeData(),
-        home: startPage,
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, child) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'Flutter News App',
+            theme: ThemeData.light(),
+            darkTheme: ThemeData.dark(),
+            themeMode: themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+            home: startPage,
+          );
+        },
       ),
     );
   }

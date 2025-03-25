@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'news_provider.dart';
 import 'news_web_view.dart';
 import 'login_page.dart';
+import 'theme_provider.dart';
 class NewsPage extends StatefulWidget {
   const NewsPage({super.key});
   @override
@@ -40,11 +41,19 @@ class _NewsPageState extends State<NewsPage> {
   @override
   Widget build(BuildContext context) {
     final newsProvider = Provider.of<NewsProvider>(context);
+    var themeProvider = Provider.of<ThemeProvider>(context); // Access ThemeProvider
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.green,
         title: const Text("NEWS NOW"),
         actions: [
+          IconButton(
+            icon: Icon(themeProvider.isDarkMode ? Icons.dark_mode : Icons.light_mode),
+            onPressed: () {
+              themeProvider.toggleTheme();
+            },
+          ),
+          // Logout Button
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: _logout,
@@ -102,7 +111,6 @@ class _NewsPageState extends State<NewsPage> {
               }).toList(),
             ),
           ),
-
           Expanded(
             child: RefreshIndicator(
               onRefresh: () async {
@@ -120,18 +128,79 @@ class _NewsPageState extends State<NewsPage> {
                 itemBuilder: (context, index) {
                   if (index < newsProvider.articles.length) {
                     final article = newsProvider.articles[index];
-                    return ListTile(
-                      title: Text(article.title ?? "No Title"),
-                      subtitle: Text(article.source.name ?? ""),
-                      leading: article.urlToImage != null
-                          ? Image.network(article.urlToImage!, width: 80, fit: BoxFit.cover)
-                          : const Icon(Icons.image_not_supported),
-                      onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => NewsWebView(url: article.url!)));
-                      },
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      child: Card(
+                        elevation: 3,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => NewsWebView(url: article.url!),
+                              ),
+                            );
+                          },
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (article.urlToImage != null)
+                                ClipRRect(
+                                  borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(10),
+                                    topRight: Radius.circular(10),
+                                  ),
+                                  child: Image.network(
+                                    article.urlToImage!,
+                                    width: double.infinity,
+                                    height: 180,
+                                    fit: BoxFit.cover,
+                                    loadingBuilder: (context, child, loadingProgress) {
+                                      if (loadingProgress == null) return child;
+                                      return const Center(child: CircularProgressIndicator());
+                                    },
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return const Center(child: Icon(Icons.image_not_supported, size: 80));
+                                    },
+                                  ),
+                                ),
+                              Padding(
+                                padding: const EdgeInsets.all(10),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      article.title ?? "No Title",
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    const SizedBox(height: 5),
+                                    Text(
+                                      article.source.name ?? "",
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.grey.shade600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     );
                   } else {
-                    return newsProvider.hasMore ? const Center(child: CircularProgressIndicator()) : const SizedBox();
+                    return newsProvider.hasMore
+                        ? const Center(child: CircularProgressIndicator())
+                        : const SizedBox();
                   }
                 },
               ),
